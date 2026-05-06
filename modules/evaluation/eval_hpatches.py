@@ -13,13 +13,13 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Evaluate XFeat Homography estimation on HPatches"
     )
-    parser.add_argument('--data-root', type=str, required=True, help='Path to hpatches-sequences-release')
+    parser.add_argument('--data-root', type=str, help='Path to hpatches-sequences-release', default='datasets/hpatches-sequences-release')
     parser.add_argument('--matcher', type=str, choices=['xfeat', 'xfeat-star'], default='xfeat')
     parser.add_argument('--checkpoint', type=str, required=True, help='Path to trained checkpoint')
     parser.add_argument('--ransac-thr', type=float, default=1.5, help='MAGSAC++ threshold')
     parser.add_argument('--top-k', type=int, default=4096)
     parser.add_argument('--exp', type=str, default='skip_default')
-    parser.add_argument('--use-original', type=bool, default=False)
+    parser.add_argument('--use-original', action='store_true')
     args = parser.parse_args()
     return args
 

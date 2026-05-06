@@ -4,6 +4,7 @@ output/
 logdir/
 results/
 *.sbatch
+/datasets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 
 class MegaDepth1500(Dataset):
-    def __init__(self, json_file, root_dir="/shared/workspace/vicos/accelerated_features/datasets/Mega1500", cache_images=True):
+    def __init__(self, json_file, root_dir="datasets/Mega1500", cache_images=True):
         with open(json_file, 'r') as f:
             self.data = json.load(f)
 

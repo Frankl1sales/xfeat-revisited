@@ -1,3 +1,15 @@
 [submodule "third_party/ALIKE"]
 	path = third_party/ALIKE
 	url = https://github.com/Shiaoming/ALIKE.git
+
+[submodule "third_party/hloc"]
+	path = third_party/hloc
+	url = https://github.com/cvg/Hierarchical-Localization.git
+
+[submodule "timing/disk"]
+	path = timing/disk
+	url = https://github.com/cvlab-epfl/disk.git
+
+[submodule "timing/SuperPoint"]
+	path = timing/SuperPoint
+	url = https://github.com/rpautrat/SuperPoint.git

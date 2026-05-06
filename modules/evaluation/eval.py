@@ -15,6 +15,8 @@ from tqdm import tqdm
 
 from modules.datasets.megadepth1500 import MegaDepth1500
 from modules.datasets.scannet1500 import ScanNet1500
+from modules.xfeat import XFeat
+from modules.xfeat_original import XFeat as XFeat_original
 
 np.set_printoptions(suppress=True)
 
@@ -27,20 +29,22 @@ def parse_args():
     parser.add_argument('--matcher', type=str, choices=['xfeat', 'xfeat-star'], default='xfeat')
     parser.add_argument('--checkpoint', type=str, required=True, help='Path to trained checkpoint (required)')
     parser.add_argument('--ransac-thr', type=float, default=2.5)
-    parser.add_argument('--output-dir', type=str, default='./results')
+    parser.add_argument('--output-dir', type=str, default='ablations/default/results')
     parser.add_argument('--top-k', type=int, default=None)
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--cache-images', action='store_true')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--exp', type=str, default='skip_default',
                         help='Ablation study which to evaluate')
+    parser.add_argument('--use-original', action='store_true',
+                        help='Evaluate the original XFeat implementation')
     args = parser.parse_args()
 
     if args.data_root is None:
         if args.dataset == 'megadepth1500':
-            args.data_root = '/shared/workspace/vicos/accelerated_features/datasets/Mega1500'
+            args.data_root = 'datasets/Mega1500'
         elif args.dataset == 'scannet1500':
-            args.data_root = '/shared/workspace/vicos/accelerated_features/datasets/ScanNet1500'
+            args.data_root = 'datasets/ScanNet1500'
     return args
 
 def intrinsics_to_camera(K):
@@ -287,9 +291,11 @@ def main():
         )
     print(f"Dataset: {len(dataset)} pairs" + (" (cached)" if args.cache_images else ""))
     
-    from modules.xfeat import XFeat
     top_k = args.top_k if args.top_k is not None else (10000 if args.matcher == 'xfeat-star' else 4096)
-    xfeat = XFeat(weights=args.checkpoint, top_k=top_k, ablation_type=args.exp)
+    if args.use_original:
+        xfeat = XFeat_original(weights=args.checkpoint, top_k=top_k)
+    else:
+        xfeat = XFeat(weights=args.checkpoint, top_k=top_k, ablation_type=args.exp)
     matcher_fn = xfeat.match_xfeat_star if args.matcher == 'xfeat-star' else xfeat.match_xfeat
     print(f"XFeat top_k: {xfeat.top_k}")
     

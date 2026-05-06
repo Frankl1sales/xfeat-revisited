@@ -1,6 +1,6 @@
 import argparse
 import os
-import urllib.request
+import shutil
 from pathlib import Path
 import numpy as np
 import cv2
@@ -44,7 +44,7 @@ hloc.extract_features.dynamic_load = hloc.utils.base_model.dynamic_load
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate XFeat on Aachen Day-Night")
-    parser.add_argument('--data-root', type=str, required=True, help='Path to Aachen dataset folder')
+    parser.add_argument('--data-root', type=str, help='Path to Aachen dataset folder', default='datasets/aachen')
     parser.add_argument('--checkpoint', type=str, required=True, help='Path to trained checkpoint')
     parser.add_argument('--top-k', type=int, default=4096)
     parser.add_argument('--exp', type=str, default='skip_default')
@@ -64,21 +64,34 @@ def main():
     outputs = Path(args.outputs_dir)
     outputs.mkdir(exist_ok=True, parents=True)
     images = dataset / 'images/images_upright'
+
+    def is_valid_colmap_model(model_dir: Path) -> bool:
+        return all((model_dir / f).exists() for f in ('cameras.bin', 'images.bin', 'points3D.bin'))
     
     version = "v1.0"
     sift_sfm = outputs / 'sfm_sift'
-    if not sift_sfm.exists():
+    if not sift_sfm.exists() or not is_valid_colmap_model(sift_sfm):
         print("\n--- Converting original Aachen NVM model to COLMAP format ---")
         from hloc import colmap_from_nvm
         nvm = dataset / '3D-models/aachen_cvpr2018_db.nvm'
         intrinsics = dataset / '3D-models/database_intrinsics.txt'
         db_path = dataset / 'aachen.db'
-        
         if not db_path.exists():
-            print("Downloading missing aachen.db...")
-            urllib.request.urlretrieve("https://data.ciirc.cvut.cz/public/projects/2020VisualLocalization/Aachen-Day-Night/aachen.db", db_path)
-        
+            raise FileNotFoundError(
+                f"Missing {db_path}. Run python -m modules.datasets.download --aachen first."
+            )
+
+        # Clean partial/invalid model folders from interrupted previous runs.
+        if sift_sfm.exists() and not is_valid_colmap_model(sift_sfm):
+            print(f"Found incomplete COLMAP model at {sift_sfm}, regenerating...")
+            shutil.rmtree(sift_sfm)
+
         colmap_from_nvm.main(nvm, intrinsics, db_path, sift_sfm)
+
+    if not is_valid_colmap_model(sift_sfm):
+        raise RuntimeError(
+            f"COLMAP model at {sift_sfm} is incomplete. Expected cameras.bin, images.bin, and points3D.bin."
+        )
 
 
     query_files = list(dataset.glob('queries/*_time_queries_with_intrinsics.txt'))

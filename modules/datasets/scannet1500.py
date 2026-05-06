@@ -23,7 +23,7 @@ def get_relative_transform(pose0, pose1):
 
 
 class ScanNet1500(Dataset):
-    def __init__(self, npz_file, root_dir="/shared/workspace/vicos/accelerated_features/datasets/ScanNet1500", cache_images=True):
+    def __init__(self, npz_file, root_dir="datasets/ScanNet1500", cache_images=True):
         self.root_dir = root_dir
         self.npz_file = npz_file
         self.cache_images = cache_images

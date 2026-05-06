@@ -14,7 +14,7 @@ from kornia.utils import create_meshgrid
 class MegaDepthDataset(Dataset):
     def __init__(self,
                  npz_path,
-                 root_dir='/shared/workspace/vicos/accelerated_features/datasets/MegaDepth/phoenix',
+                 root_dir='datasets/MegaDepth/phoenix',
                  mode='train',
                  min_overlap_score = 0.3, #0.3,
                  max_overlap_score = 1.0, #1,

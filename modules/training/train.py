@@ -24,9 +24,9 @@ from modules.training.losses import *
 def parse_args():
     parser = argparse.ArgumentParser(description="XFeat training script.")
 
-    parser.add_argument('--megadepth_root_path', type=str, default='/shared/workspace/vicos/accelerated_features/datasets/MegaDepth',
+    parser.add_argument('--megadepth_root_path', type=str, default='datasets/MegaDepth',
                         help='Path to the MegaDepth dataset root directory.')
-    parser.add_argument('--synthetic_root_path', type=str, default='/shared/workspace/vicos/accelerated_features/datasets/coco_20k',
+    parser.add_argument('--synthetic_root_path', type=str, default='datasets/coco_20k',
                         help='Path to the synthetic dataset root directory.')
     parser.add_argument('--ckpt_save_path', type=str, default='.',
                         help='Path to save the checkpoints.')
