@@ -1,8 +1,7 @@
 
+# XFeat Revisited: Reproducibility and Evaluation of a Lightweight Image Matcher
 
-# XFeat Reproduction and Ablations
-
-This repository contains a reproduction and extension of the CVPR 2024 paper: **[XFeat: Accelerated Features for Lightweight Image Matching](https://arxiv.org/abs/2404.19174)**. 
+This repository contains the official implementation of the paper *XFeat Revisited: Reproducibility and Evaluation of a Lightweight Image Matcher* (TMLR 2026), a reproducibility study and extension of the CVPR 2024 paper: **[XFeat: Accelerated Features for Lightweight Image Matching](https://arxiv.org/abs/2404.19174)**. 
 
 In addition to the original XFeat experiments, this codebase includes re-implemented visualization and evaluations scripts (including Aachen Day-Night and HPatches), and a comprehensive set of architectural ablation studies.
 
