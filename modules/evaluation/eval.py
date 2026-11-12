@@ -38,6 +38,10 @@ def parse_args():
                         help='Ablation study which to evaluate')
     parser.add_argument('--use-original', action='store_true',
                         help='Evaluate the original XFeat implementation')
+    parser.add_argument('--json-file', type=str, default=None,
+                        help='Optional override for the MegaDepth/ScanNet pair list JSON')
+    parser.add_argument('--resize-hw', type=int, nargs=2, default=None,
+                        help='Optional resize (H W) for ScanNet/MegaDepth with automatic coordinate rescaling')
     args = parser.parse_args()
 
     if args.data_root is None:
@@ -249,15 +253,31 @@ def evaluate_dataset(matcher_fn, dataset, ransac_thr=0.5, batch_size=1, num_work
     for d in tqdm(loader, desc="Evaluating"):
         img0 = tensor2bgr(d['image0'])
         img1 = tensor2bgr(d['image1'])
-        mkpts0, mkpts1 = matcher_fn(img0, img1)
+        if getattr(evaluate_dataset, 'resize_hw', None) is not None:
+            rh, rw = evaluate_dataset.resize_hw
+            m_img0 = cv2.resize(img0, (rw, rh), interpolation=cv2.INTER_AREA)
+            m_img1 = cv2.resize(img1, (rw, rh), interpolation=cv2.INTER_AREA)
+            mkpts0, mkpts1 = matcher_fn(m_img0, m_img1)
+        else:
+            mkpts0, mkpts1 = matcher_fn(img0, img1)
         if len(mkpts0) == 0:
             n_no_matches += 1
         if 'scale0' in d:
             mkpts0 *= d['scale0'].cpu().numpy()
+        elif getattr(evaluate_dataset, 'resize_hw', None) is not None:
+            rh, rw = evaluate_dataset.resize_hw
+            mkpts0[:, 0] *= (img0.shape[1] / float(rw))
+            mkpts0[:, 1] *= (img0.shape[0] / float(rh))
         if 'scale1' in d:
             mkpts1 *= d['scale1'].cpu().numpy()
+        elif getattr(evaluate_dataset, 'resize_hw', None) is not None:
+            rh, rw = evaluate_dataset.resize_hw
+            mkpts1[:, 0] *= (img1.shape[1] / float(rw))
+            mkpts1[:, 1] *= (img1.shape[0] / float(rh))
         d['pts0'], d['pts1'] = mkpts0, mkpts1
         d.update(compute_pose_error(d, ransac_thr))
+        d.pop('image0', None)
+        d.pop('image1', None)
         pairs.append(d)
     if n_no_matches > 0:
         print(f"\nWarning: {n_no_matches} pairs had no matches!")
@@ -277,7 +297,7 @@ def main():
 
     print(f"Loading {args.dataset} dataset...")
     if args.dataset == 'megadepth1500':
-        json_file = 'assets/megadepth_1500.json'
+        json_file = args.json_file if getattr(args, 'json_file', None) else 'assets/megadepth_1500.json'
         dataset = MegaDepth1500(
             json_file=json_file,
             root_dir=os.path.join(args.data_root, 'megadepth_test_1500'),
@@ -301,6 +321,7 @@ def main():
     
     print(f"\nEvaluating (RANSAC threshold: {args.ransac_thr}px, workers: {args.num_workers})")
     with torch.no_grad():
+        evaluate_dataset.resize_hw = args.resize_hw
         pairs = evaluate_dataset(matcher_fn, dataset, args.ransac_thr, num_workers=args.num_workers, seed=args.seed)
     compute_metrics(pairs, args.dataset)
     

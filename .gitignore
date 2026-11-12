@@ -224,3 +224,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local benchmark artifacts (datasets, raw board CSVs, logs, backups)
+datasets/
+_docker_bridge*/
+output/*.log
+*.bak
+contexto_projeto.txt
