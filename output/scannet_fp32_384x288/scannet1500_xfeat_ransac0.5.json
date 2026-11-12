@@ -1,0 +1,16 @@
+{
+  "dataset": "scannet1500",
+  "matcher": "xfeat",
+  "checkpoint": "checkpoints/xfeat.pt",
+  "seed": 42,
+  "ransac_thr": 0.5,
+  "num_pairs": 1500,
+  "metrics": {
+    "auc@5": 0.026593353111416494,
+    "auc@5_se": 0.006587867636800242,
+    "auc@10": 0.07781306904448189,
+    "auc@10_se": 0.009919677414109795,
+    "auc@20": 0.16509186023612862,
+    "auc@20_se": 0.012010797611285408
+  }
+}

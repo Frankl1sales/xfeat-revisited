@@ -1,0 +1,35 @@
+{
+  "dataset": "scannet1500",
+  "matcher": "rv1103_allkpts_384x288",
+  "num_pairs": 1500,
+  "metrics_ransac0.5": {
+    "auc@5": 0.0,
+    "auc@5_se": 0.0,
+    "auc@10": 0.0,
+    "auc@10_se": 0.0,
+    "auc@20": 0.0,
+    "auc@20_se": 0.0,
+    "Acc@10": 0.0,
+    "Acc@10_se": 0.0,
+    "MIR": 0.0,
+    "MIR_se": 0.0,
+    "mean_inliers": 0.0,
+    "mean_inliers_se": 0.0,
+    "mean_matches": 0.0
+  },
+  "metrics_ransac2.5": {
+    "auc@5": 0.0,
+    "auc@5_se": 0.0,
+    "auc@10": 0.0,
+    "auc@10_se": 0.0,
+    "auc@20": 0.0,
+    "auc@20_se": 0.0,
+    "Acc@10": 0.0,
+    "Acc@10_se": 0.0,
+    "MIR": 0.0,
+    "MIR_se": 0.0,
+    "mean_inliers": 0.0,
+    "mean_inliers_se": 0.0,
+    "mean_matches": 0.0
+  }
+}
